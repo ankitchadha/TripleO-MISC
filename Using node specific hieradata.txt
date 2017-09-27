@@ -1,0 +1,22 @@
+Using node-specific hieradata with TripleO:
+
+1. Create a heat template that looks something like this:
+
+[stack@undercloud contrail]$ cat node-specific-hieradata.yaml
+resource_registry:
+  OS::TripleO::ContrailAnalyticsDatabaseExtraConfigPre: ../../puppet/extraconfig/pre_deploy/per_node.yaml
+
+parameter_defaults:
+  NodeDataLookup: |
+    {"003FEF0B-FC16-4C2E-B7EA-1B30008948A8": {"contrail::contrail_version": "3"},
+     "99FD12A9-191C-41B3-BF6B-3CE30C63CC01": {"contrail::contrail_version": "3"},
+     "D4B82082-5D64-4674-93AB-7377B6311820": {"contrail::contrail_version": "3"},
+     "8350F888-1BB8-4CE9-9F48-096CAD3F39A9": {"contrail::contrail_version": "3"},
+     "AB15DEA1-89B8-4621-9F79-5A6AE25BCF93": {"contrail::contrail_version": "3"}}
+
+
+[stack@undercloud contrail]$
+
+2. Include this heat template while deploying or updating stack
+3. The node-id is the system-id of the target node. That can be retrieved using 'openstack baremetal introspection data save <UUID> | jq .extra.system.product.uuid
+4. At the end of the stack creation/updation, this variable would be available as hieradata in the mentioned nodes
